@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTag Color Converter</title>
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center;
+    justify-content: center; background: #101018; font-family: Arial, sans-serif;
+    color: white;
+}
+.container {
+    width: 90%; max-width: 460px; padding: 30px; background: #1b1b28;
+    border: 1px solid #303044; border-radius: 18px;
+}
+h1 { text-align: center; }
+h1 span { color: #a477ff; }
+.subtitle { text-align: center; color: #9999aa; margin-bottom: 30px; }
+.color-preview {
+    height: 130px; border-radius: 12px; background: #000; margin-bottom: 25px;
+    border: 2px solid #39394d;
+}
+.slider-group { margin-bottom: 22px; }
+.slider-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.slider-header span:last-child { color: #a477ff; font-weight: bold; }
+input[type="range"] { width: 100%; cursor: pointer; accent-color: #a477ff; }
+.result {
+    text-align: center; background: #11111a; padding: 18px; border-radius: 10px;
+    margin-top: 25px;
+}
+.hex { font-size: 30px; color: #a477ff; font-weight: bold; }
+.rgb { color: #9999aa; margin-top: 8px; }
+button {
+    width: 100%; margin-top: 15px; padding: 14px; border: none;
+    border-radius: 10px; background: #8c5cf6; color: white;
+    font-size: 16px; font-weight: bold; cursor: pointer;
+}
+button:hover { background: #a477ff; }
+.info { text-align: center; color: #77778a; font-size: 12px; margin-top: 22px; }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1><span>V</span>TAG Converter</h1>
+    <p class="subtitle">Adjust your VTag color!</p>
+    <div class="color-preview" id="preview"></div>
+
+    <div class="slider-group">
+        <div class="slider-header"><span>Red</span><span id="redValue">0</span></div>
+        <input type="range" min="0" max="9" value="0" step="1" id="red">
+    </div>
+    <div class="slider-group">
+        <div class="slider-header"><span>Green</span><span id="greenValue">0</span></div>
+        <input type="range" min="0" max="9" value="0" step="1" id="green">
+    </div>
+    <div class="slider-group">
+        <div class="slider-header"><span>Blue</span><span id="blueValue">0</span></div>
+        <input type="range" min="0" max="9" value="0" step="1" id="blue">
+    </div>
+
+    <div class="result">
+        <div class="hex" id="hex">#000000</div>
+        <div class="rgb" id="rgb">RGB: 0, 0, 0</div>
+        <p id="vtag">VTag Code: 000</p>
+    </div>
+    <button id="copyButton">Copy HEX</button>
+    <p class="info">VTag Color Converter • 0-9 RGB System</p>
+</div>
+<script>
+const red = document.getElementById("red");
+const green = document.getElementById("green");
+const blue = document.getElementById("blue");
+
+function updateColor() {
+    const r = Math.round(Number(red.value) * 255 / 9);
+    const g = Math.round(Number(green.value) * 255 / 9);
+    const b = Math.round(Number(blue.value) * 255 / 9);
+    const hex = "#" + [r, g, b]
+        .map(x => x.toString(16).padStart(2, "0"))
+        .join("").toUpperCase();
+
+    document.getElementById("redValue").textContent = red.value;
+    document.getElementById("greenValue").textContent = green.value;
+    document.getElementById("blueValue").textContent = blue.value;
+    document.getElementById("preview").style.background = hex;
+    document.getElementById("hex").textContent = hex;
+    document.getElementById("rgb").textContent = `RGB: ${r}, ${g}, ${b}`;
+    document.getElementById("vtag").textContent =
+        `VTag Code: ${red.value}${green.value}${blue.value}`;
+}
+
+async function copyHex() {
+    const hex = document.getElementById("hex").textContent;
+    try {
+        await navigator.clipboard.writeText(hex);
+        document.getElementById("copyButton").textContent = "Copied!";
+        setTimeout(() => document.getElementById("copyButton").textContent = "Copy HEX", 1400);
+    } catch {
+        alert("Copy isn't available here. Select the HEX code and copy it.");
+    }
+}
+
+[red, green, blue].forEach(slider => slider.addEventListener("input", updateColor));
+document.getElementById("copyButton").addEventListener("click", copyHex);
+updateColor();
+</script>
+</body>
+</html>
